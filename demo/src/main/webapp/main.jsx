@@ -1,3 +1,4 @@
+import "./css/style.css";
 
 import { DemoMain } from "@sjs/main.js";
 DemoMain.main();

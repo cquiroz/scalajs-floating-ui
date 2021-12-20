@@ -1,23 +1,23 @@
 package floating
 
 import japgolly.scalajs.react._
-import floatingui.floatingUiReactDom.mod
-import floatingui.floatingUiReactDom.anon.OmitPartialComputePositio
-import floatingui.floatingUiReactDom.srcMod.UseFloatingReturn
+import floatingui.raw.floatingUiReactDom.mod
+import floatingui.raw.floatingUiReactDom.anon.OmitPartialComputePositio
+import floatingui.raw.floatingUiReactDom.srcMod.UseFloatingReturn
 
 object HooksApiExt {
-  val hook1  =
-    CustomHook.unchecked[OmitPartialComputePositio, UseFloatingReturn] { pos =>
-      println(pos.placement); mod.useFloating()
-    }
-  val jsHook = CustomHook.unchecked[OmitPartialComputePositio, UseFloatingReturn] { pos =>
-    val res = mod.useFloating(pos)
-    // res.update()
-    res
-  }
+  // val hook1  =
+  //   CustomHook.unchecked[OmitPartialComputePositio, UseFloatingReturn] { pos =>
+  //     println(pos.placement); mod.useFloating()
+  //   }
+  // val jsHook = CustomHook.unchecked[OmitPartialComputePositio, UseFloatingReturn] { pos =>
+  //   println(pos.placement); val res = mod.useFloating(pos)
+  //   // res.update()
+  //   res
+  // }
   val hook =
     // CustomHook.unsafe
-    CustomHook[OmitPartialComputePositio]
+    CustomHook[ComputePosition]
       // .withHooks[Unit]
       // .useCallback(())
       // .useCallback((pos: OmitPartialComputePositio) => mod.useFloating(pos))
@@ -26,36 +26,29 @@ object HooksApiExt {
       // )
       // println(pos.placement); mod.useFloating(pos)
       .buildReturning { pos =>
-        println(pos.placement);
-        val res = mod.useFloating(pos)
-        println("======")
-        println(res.placement)
-        // res.update()
-        println(res.placement)
-        println("---")
-        res
+        mod.useFloating(pos)
       }
   // .buildReturning((p, v) => v.value)
 
   sealed class Primary[Ctx, Step <: HooksApi.AbstractStep](api: HooksApi.Primary[Ctx, Step]) {
 
-    final def useFloating(pos: OmitPartialComputePositio)(implicit
+    final def useFloating(pos: ComputePosition)(implicit
       step:                    Step
     ): step.Next[UseFloatingReturn] =
       useFloatingBy(_ => pos)
 
-    final def useFloatingBy(pos: Ctx => OmitPartialComputePositio)(implicit
+    final def useFloatingBy(pos: Ctx => ComputePosition)(implicit
       step:                      Step
     ): step.Next[UseFloatingReturn] =
       // api.customBy(ctx => mod.useFloating(pos(ctx)))
-      api.customBy(ctx => jsHook(pos(ctx)))
+      api.customBy(ctx => hook(pos(ctx)))
   }
 
   final class Secondary[Ctx, CtxFn[_], Step <: HooksApi.SubsequentStep[Ctx, CtxFn]](
     api: HooksApi.Secondary[Ctx, CtxFn, Step]
   ) extends Primary[Ctx, Step](api) {
 
-    def useFloatingBy(pos: CtxFn[OmitPartialComputePositio])(implicit
+    def useFloatingBy(pos: CtxFn[ComputePosition])(implicit
       step:                Step
     ): step.Next[UseFloatingReturn] =
       useFloatingBy(step.squash(pos)(_))
@@ -76,4 +69,4 @@ trait HooksApiExt {
     new Secondary(api)
 }
 
-object implicits extends HooksApiExt
+object hooks extends HooksApiExt

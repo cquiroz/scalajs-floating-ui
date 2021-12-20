@@ -1,6 +1,7 @@
 import org.scalajs.linker.interface.ModuleSplitStyle
 
 val scalaJsReact       = "2.0.0"
+val scalaJSReactCommon = "0.14.7"
 
 /* ScalablyTyped configuration */
 enablePlugins(ScalablyTypedConverterGenSourcePlugin)
@@ -21,14 +22,15 @@ addCommandAlias(
 
 lazy val facade = project
   .in(file("facade"))
-  .settings(name := "scalajs-floating-ui")
+  .settings(name := "facade")
   .settings(
     crossScalaVersions := Seq("2.13.7", "3.1.0"),
     libraryDependencies ++= Seq(
       "com.github.japgolly.scalajs-react" %%% "core"      % scalaJsReact,
+      "io.github.cquiroz.react"           %%% "common"    % scalaJSReactCommon,
     ),
     // shade into another package
-  stOutputPackage         := "floatingui",
+    stOutputPackage := "floatingui.raw",
     /* javascript / typescript deps */
     Compile / npmDependencies ++= Seq(
       "@floating-ui/react-dom" -> "0.3.3"
