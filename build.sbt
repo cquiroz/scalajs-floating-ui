@@ -24,7 +24,7 @@ lazy val facade = project
   .in(file("facade"))
   .settings(name := "facade")
   .settings(
-    crossScalaVersions := Seq("2.13.7", "3.1.0"),
+    // crossScalaVersions := Seq("2.13.7", "3.1.0"),
     libraryDependencies ++= Seq(
       "com.github.japgolly.scalajs-react" %%% "core"      % scalaJsReact,
       "io.github.cquiroz.react"           %%% "common"    % scalaJSReactCommon,

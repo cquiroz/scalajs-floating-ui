@@ -1,6 +1,8 @@
 import floatingui.raw.floatingUiCore.typesMod
 import floatingui.raw.floatingUiReactDom.anon.OmitPartialComputePositio
+import floatingui.raw.floatingUiReactDom.anon.Element
 import floatingui.raw.floatingUiCore.mod
+import floatingui.raw.floatingUiReactDom.{ mod => reactMod }
 import floatingui.raw.floatingUiCore.arrowMod
 import japgolly.scalajs.react._
 import scala.scalajs.js
@@ -19,10 +21,11 @@ package object floating {
     p
   }
 
-  lazy val flip        = mod.flip()
-  def offset(i: Int)   = mod.offset(i)
-  lazy val shift       = mod.shift()
-  def arrow(i: js.Any) = mod.arrow(arrowMod.Options(i))
+  lazy val flip         = mod.flip()
+  def offset(i: Int)    = mod.offset(i)
+  lazy val shift        = mod.shift()
+  def arrow(i: Element) = reactMod.arrow(i)
+  // def arrow(i: js.Any) = mod.arrow(arrowMod.Options().setElement(i))
   // def arrow(i: HTMLElement) = mod.arrow(i)
 
   object Placement {
