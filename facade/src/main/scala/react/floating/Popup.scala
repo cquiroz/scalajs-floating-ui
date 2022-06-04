@@ -5,6 +5,7 @@ package floating.demo
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
+import japgolly.scalajs.react.vdom.TagOf
 import org.scalajs.dom
 import floating._
 import floating.hooks._
@@ -13,16 +14,20 @@ import scala.scalajs.js
 import scala.scalajs.js.|
 import scala.scalajs.js.annotation.JSExportTopLevel
 import org.scalajs.dom.html
+import org.scalajs.dom
 import floatingui.raw.floatingUiReactDom.anon.Element
-import react.common.style._
+import react.common._
 
 import js.annotation._
 
-@JSExportTopLevel("DemoMain")
-object DemoMain {
+final case class Tooltip(trigger: VdomTag) extends ReactFnProps[Tooltip](Tooltip.component)
+
+object Tooltip {
+  type Props = Tooltip
+
   val component =
     ScalaFnComponent
-      .withHooks[Unit]
+      .withHooks[Props]
       .useRefToAnyVdom
       .useFloatingBy { (_, ar) =>
         ComputePosition(
@@ -37,10 +42,11 @@ object DemoMain {
           )
         )
       }
-      .render { (_, a, h) =>
+      .useState(false)
+      .render { (props, a, h, open) =>
         org.scalajs.dom.window.console.log(h)
         val refRef    =
-          Ref.fromJs(h.refs.reference.asInstanceOf[facade.React.RefHandle[html.Div | Null]])
+          Ref.fromJs(h.refs.reference.asInstanceOf[facade.React.RefHandle[dom.Node | Null]])
         val floatRef  =
           Ref.fromJs(h.refs.floating.asInstanceOf[facade.React.RefHandle[html.Div | Null]])
         val arrowOpt  = h.middlewareData.arrow.toOption
@@ -70,30 +76,18 @@ object DemoMain {
           case _                                                              => Map.empty
         }
 
-        val r = <.button(^.untypedRef := refRef, "Example")
-        val f = <.div(
-          ^.id         := "tooltip",
-          ^.untypedRef := floatRef,
-          ^.style      := Style(Map("left" -> s"${h.x}px", "top" -> s"${h.y}px")).toJsObject,
-          "My tooltip which is now quite a bit longer",
-          <.div(^.id := "arrow", ^.style := Style(arrowStyle ++ placementStyle).toJsObject)
-            .withRef(a)
-        )
+        val r = props.trigger(^.onClick --> open.setState(true)).withRef(refRef)
+        val f = if (open.value) {
+          <.div(
+            ^.id         := "tooltip",
+            ^.untypedRef := floatRef,
+            ^.style      := Style(Map("left" -> s"${h.x}px", "top" -> s"${h.y}px")).toJsObject,
+            "My tooltip which is now quite a bit longer",
+            <.div(^.id := "arrow", ^.style := Style(arrowStyle ++ placementStyle).toJsObject)
+              .withRef(a)
+          )
+        } else EmptyVdom
+
         React.Fragment(r, f)
       }
-
-  @JSExport
-  def main(): Unit = {
-
-    val container = Option(dom.document.getElementById("root")).getOrElse {
-      val elem = dom.document.createElement("div")
-      elem.id = "root"
-      dom.document.body.appendChild(elem)
-      elem
-    }
-
-    Tooltip(<.button("Example")).renderIntoDOM(container)
-    // component().renderIntoDOM(container)
-    ()
-  }
 }

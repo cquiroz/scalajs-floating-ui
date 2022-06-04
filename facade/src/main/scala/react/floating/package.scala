@@ -1,4 +1,9 @@
+// Copyright (c) 2016-2022 Association of Universities for Research in Astronomy, Inc. (AURA)
+// For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+
 import floatingui.raw.floatingUiCore.typesMod
+import floatingui.raw.floatingUiCore.typesMod.Placement
+import floatingui.raw.floatingUiDom.anon
 import floatingui.raw.floatingUiReactDom.anon.OmitPartialComputePositio
 import floatingui.raw.floatingUiReactDom.anon.Element
 import floatingui.raw.floatingUiCore.mod
@@ -21,10 +26,14 @@ package object floating {
     p
   }
 
-  lazy val flip         = mod.flip()
-  def offset(i: Int)    = mod.offset(i)
-  lazy val shift        = mod.shift()
-  def arrow(i: Element) = reactMod.arrow(i)
+  type ShiftOptions = anon.PartialOptionsDOMDetectOvAltBoundary
+  val ShiftOptions = anon.PartialOptionsDOMDetectOvAltBoundary
+
+  lazy val flip                    = reactMod.flip()
+  def offset(i: Int)               = reactMod.offset(i)
+  lazy val shift                   = reactMod.shift()
+  def shift(options: ShiftOptions) = reactMod.shift(options)
+  def arrow(i: Element)            = reactMod.arrow(i)
   // def arrow(i: js.Any) = mod.arrow(arrowMod.Options().setElement(i))
   // def arrow(i: HTMLElement) = mod.arrow(i)
 

@@ -1,7 +1,7 @@
 import org.scalajs.linker.interface.ModuleSplitStyle
 
-val scalaJsReact       = "2.0.0"
-val scalaJSReactCommon = "0.14.7"
+val scalaJsReact       = "2.1.1"
+val scalaJSReactCommon = "0.17.0"
 
 /* ScalablyTyped configuration */
 enablePlugins(ScalablyTypedConverterGenSourcePlugin)
@@ -26,8 +26,8 @@ lazy val facade = project
   .settings(
     // crossScalaVersions := Seq("2.13.7", "3.1.0"),
     libraryDependencies ++= Seq(
-      "com.github.japgolly.scalajs-react" %%% "core"      % scalaJsReact,
-      "io.github.cquiroz.react"           %%% "common"    % scalaJSReactCommon,
+      "com.github.japgolly.scalajs-react" %%% "core"   % scalaJsReact,
+      "io.github.cquiroz.react"           %%% "common" % scalaJSReactCommon
     ),
     // shade into another package
     stOutputPackage := "floatingui.raw",
@@ -45,18 +45,19 @@ lazy val facade = project
       Set(
         // By necessity facades will have unused params
         "-Wdead-code",
+        "-Ywarn-dead-code",
         "-Wunused:params",
         "-Wunused:imports",
         "-Wunused:explicits"
       )
     )),
-    Compile / doc / sources := Seq(),
+    Compile / doc / sources := Seq()
     // focus only on these libraries
     // stMinimize              := Selection.AllExcept("@svgdotjs/svg.js")
     // stMinimize := Selection.All,
     // stMinimizeKeep ++= List("svgdotjsSvgJs.mod.Element")
   )
-  .settings(lucumaScalaJsSettings: _*)
+  // .settings(lucumaScalaJsSettings: _*)
   .enablePlugins(ScalablyTypedConverterGenSourcePlugin)
 
 lazy val demo =
@@ -66,7 +67,7 @@ lazy val demo =
     .settings(
       test            := {},
       libraryDependencies ++= Seq(
-        "com.github.japgolly.scalajs-react" %%% "core"      % scalaJsReact,
+        "com.github.japgolly.scalajs-react" %%% "core" % scalaJsReact
       ),
       Compile / fastLinkJS / scalaJSLinkerConfig ~= { _.withSourceMap(false) },
       Compile / fullLinkJS / scalaJSLinkerConfig ~= { _.withSourceMap(false) },
