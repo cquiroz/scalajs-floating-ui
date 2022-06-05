@@ -30,10 +30,11 @@ lazy val facade = project
       "io.github.cquiroz.react"           %%% "common" % scalaJSReactCommon
     ),
     // shade into another package
-    stOutputPackage := "floatingui.raw",
+    stOutputPackage         := "floatingui.raw",
     /* javascript / typescript deps */
     Compile / npmDependencies ++= Seq(
-      "@floating-ui/react-dom" -> "0.3.3"
+      // "@floating-ui/react-dom"              -> "0.7.1",
+      "@floating-ui/react-dom-interactions" -> "0.6.3"
     ),
     /* disabled because it somehow triggers many warnings */
     scalaJSLinkerConfig ~= (_.withSourceMap(false)),
@@ -51,11 +52,17 @@ lazy val facade = project
         "-Wunused:explicits"
       )
     )),
-    Compile / doc / sources := Seq()
+    Compile / doc / sources := Seq(),
     // focus only on these libraries
     // stMinimize              := Selection.AllExcept("@svgdotjs/svg.js")
-    // stMinimize := Selection.All,
-    // stMinimizeKeep ++= List("svgdotjsSvgJs.mod.Element")
+    stMinimize              := Selection.All,
+    stMinimizeKeep ++= List(
+      "floatingUiReactDom.mod.^",
+      "floatingUiReactDom.mod.computePosition",
+      "floatingUiReactDom.mod.flip",
+      "floatingUiReactDom.mod.autoUpdate",
+      "floatingUiReactDom.mod.useFloating"
+    )
   )
   // .settings(lucumaScalaJsSettings: _*)
   .enablePlugins(ScalablyTypedConverterGenSourcePlugin)

@@ -1,28 +1,30 @@
 // Copyright (c) 2016-2022 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
-package floating
+package floatingui
 
 import japgolly.scalajs.react._
 import floatingui.raw.floatingUiReactDom.mod
-import floatingui.raw.floatingUiReactDom.anon.OmitPartialComputePositio
-import floatingui.raw.floatingUiReactDom.srcMod.UseFloatingReturn
+// import floatingui.raw.floatingUiDom.anon.PartialShiftOptionsDetect
+// import floatingui.raw.floatingUiReactDom.anon.OmitPartialComputePositio
+// import floatingui.raw.floatingUiReactDomInteractions.typesMod.UseFloatingReturn
+import floatingui.raw.floatingUiReactDom.{ typesMod => reactTypesMod }
 
 object HooksApiExt {
   val floatingHook =
-    CustomHook[ComputePosition]
+    CustomHook[UseFloatingProps]
       .buildReturning { pos =>
-        mod.useFloating(pos)
+        mod.useFloating[reactTypesMod.ReferenceType](pos)
       }
 
   sealed class Primary[Ctx, Step <: HooksApi.AbstractStep](api: HooksApi.Primary[Ctx, Step]) {
 
-    final def useFloating(pos: ComputePosition)(implicit
+    final def useFloating(pos: UseFloatingProps)(implicit
       step:                    Step
     ): step.Next[UseFloatingReturn] =
       useFloatingBy(_ => pos)
 
-    final def useFloatingBy(pos: Ctx => ComputePosition)(implicit
+    final def useFloatingBy(pos: Ctx => UseFloatingProps)(implicit
       step:                      Step
     ): step.Next[UseFloatingReturn] =
       api.customBy(ctx => floatingHook(pos(ctx)))
@@ -32,8 +34,8 @@ object HooksApiExt {
     api: HooksApi.Secondary[Ctx, CtxFn, Step]
   ) extends Primary[Ctx, Step](api) {
 
-    def useFloatingBy(pos: CtxFn[ComputePosition])(implicit
-      step:                Step
+    def useFloatingBy[RT](pos: CtxFn[UseFloatingProps])(implicit
+      step:                    Step
     ): step.Next[UseFloatingReturn] =
       useFloatingBy(step.squash(pos)(_))
   }
