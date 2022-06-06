@@ -62,6 +62,8 @@ lazy val facade = project
       "floatingUiReactDom.mod.flip",
       "floatingUiReactDom.mod.offset",
       "floatingUiReactDom.mod.arrow",
+      "floatingUiReactDom.mod.autoPlacement",
+      "floatingUiReactDom.mod.useHover",
       "floatingUiReactDom.mod.useFloating"
     )
   )

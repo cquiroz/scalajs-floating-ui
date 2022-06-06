@@ -51,8 +51,12 @@ object Tooltip {
           // .setWhileElementsMounted(mod.autoUpdate)
           .setMiddleware(
             js.Array(
-              offset(10),
-              flip,
+              autoPlacement(
+                AutoPlacementOptions()
+                  .setAllowedPlacements(js.Array(Placement.Top, Placement.Bottom))
+              ),
+              offset(4),
+              // flip,
               // shift(ShiftOptions().setPadding(5)),
               arrow(
                 DomElement(arrowRef.raw.asInstanceOf[dom.HTMLElement])
@@ -109,35 +113,6 @@ object Tooltip {
       }
       .render { (props, a, b, arr, h, styles) =>
         val (placementStyle, arrowStyle) = styles.value
-        // val placement = h.placement
-        //
-        // val arrowStyle: Map[String, String | Int] =
-        //   (arrowOpt.flatMap(_.x.toOption), arrowOpt.flatMap(_.y.toOption)) match {
-        //     case (Some(x), Some(y)) =>
-        //       Map("left" -> s"${x}px", "top" -> s"${y}px", "right" -> "", "bottom" -> "")
-        //     case (Some(x), None)    =>
-        //       Map("left" -> s"${x}px", "top" -> s"", "right" -> "", "bottom" -> "")
-        //     case (None, Some(y))    =>
-        //       Map("left" -> "", "top" -> s"${y}px", "right" -> "", "bottom" -> "")
-        //     case _                  => Map.empty
-        //   }
-        //
-        // val arrowShift = "-4px"
-        //
-        // val placementStyle: Map[String, String | Int] = placement match {
-        //   // case Placement.Top | Placement.TopStart | Placement.TopEnd          => Map("bottom" -> arrowShift)
-        //   case Placement.Top    => Map("bottom" -> arrowShift)
-        //   // case Placement.Bottom | Placement.BottomStart | Placement.BottomEnd =>
-        //   case Placement.Bottom =>
-        //     Map("top" -> arrowShift)
-        //   // case Placement.Left | Placement.LeftStart | Placement.LeftEnd       =>
-        //   case Placement.Left   =>
-        //     Map("right" -> arrowShift)
-        //   // case Placement.Right | Placement.RightStart | Placement.RightEnd    =>
-        //   case Placement.Right  =>
-        //     Map("left" -> arrowShift)
-        //   case _                => Map.empty
-        // }
 
         val r = props.trigger.withRef(a)
         val f = //if (open.value) {
@@ -149,7 +124,7 @@ object Tooltip {
             //   Map("position" -> h.strategy.toString, "left" -> s"${h.x}px", "top" -> s"${h.y}px")
             // ).toJsObject,
             "My tooltip autoplaced 1 which is now quite a bit longer",
-            <.div(^.id := "arrow", ^.style := arrowStyle.toJsObject).withRef(arr)
+            <.div(^.cls := "arrow", ^.style := arrowStyle.toJsObject).withRef(arr)
             // <.div(^.id := "arrow", ^.style := Style(arrowStyle ++ placementStyle).toJsObject)
             // <.div(^.id := "arrow", ^.style := Style(arrowStyle ++ placementStyle).toJsObject)
             //   .withRef(a)

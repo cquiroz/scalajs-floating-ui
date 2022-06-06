@@ -8,6 +8,7 @@ import floatingui.raw.floatingUiCore.typesMod.Side
 // import floatingui.raw.floatingUiCore.typesMod.ComputePositionReturn
 // import floatingui.raw.floatingUiDom.anon.PartialShiftOptionsDetect
 import floatingui.raw.floatingUiDom.anon.{ Element => DomElement }
+import floatingui.raw.floatingUiDom.anon.PartialAutoPlacementOptio
 // import floatingui.raw.floatingUiReactDom.anon.OmitPartialComputePositio
 // import floatingui.raw.floatingUiReactDom.anon.Element
 // import floatingui.raw.floatingUiCore.mod
@@ -45,12 +46,16 @@ package object floatingui {
 
   // type ShiftOptions = PartialShiftOptionsDetect
   // val ShiftOptions = PartialShiftOptionsDetect
+  type AutoPlacementOptions = PartialAutoPlacementOptio
+  val AutoPlacementOptions = PartialAutoPlacementOptio
 
-  lazy val flip: Middleware            = reactMod.flip()
-  def offset(i: Int): Middleware       = reactMod.offset(i).asInstanceOf[Middleware]
+  lazy val flip: Middleware                                    = reactMod.flip()
+  def offset(i: Int): Middleware                               = reactMod.offset(i).asInstanceOf[Middleware]
   // lazy val shift                   = reactMod.shift()
   // def shift(options: ShiftOptions) = reactMod.shift(options)
-  def arrow(i: DomElement): Middleware = reactMod.arrow(i)
+  def arrow(i: DomElement): Middleware                         = reactMod.arrow(i)
+  lazy val autoPlacement: Middleware                           = reactMod.autoPlacement()
+  def autoPlacement(options: AutoPlacementOptions): Middleware = reactMod.autoPlacement(options)
   // def arrow(i: js.Any) = mod.arrow(arrowMod.Options().setElement(i))
   // def arrow(i: HTMLElement) = mod.arrow(i)
 
