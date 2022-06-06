@@ -16,11 +16,11 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 import org.scalajs.dom.html
 import org.scalajs.dom
 // import floatingui.raw.floatingUiReactDom.anon.Element
-import floatingui.raw.floatingUiReactDom.{ typesMod => reactTypesMod }
+import floatingui.raw.floatingUiReactDomInteractions.{ typesMod => reactTypesMod }
 import floatingui.raw.floatingUiCore.typesMod.Strategy
 import floatingui.raw.floatingUiCore.typesMod.Placement
 import floatingui.raw.floatingUiDom.anon.{ Element => DomElement }
-import floatingui.raw.floatingUiReactDom.mod
+import floatingui.raw.floatingUiReactDomInteractions.mod
 import react.common._
 
 import js.annotation._
@@ -44,8 +44,7 @@ object Tooltip {
       .useRefToAnyVdom // floating
       .useRefToVdom[dom.HTMLElement] // arrow
       .useFloatingBy { (_, _, _, arrowRef) =>
-        reactTypesMod
-          .UseFloatingProps[reactTypesMod.ReferenceType]()
+        UseFloatingProps()
           // .setStrategy(Strategy.Fixed)
           .setPlacement(Placement.Top)
           // .setWhileElementsMounted(mod.autoUpdate)
@@ -64,16 +63,17 @@ object Tooltip {
             )
           )
       }
-      // .useState(false)
-      .useEffectWithDepsBy((_, a, b, _, _) => (a, b)) { (_, a, b, _, h) => _ =>
+      // .useHoverBy((_, _, _, _, h) => h.asInstanceOf[FloatingContext])
+      .useState(false)
+      .useEffectWithDepsBy((_, a, b, _, _, _) => (a, b)) { (_, a, b, _, h, _) => _ =>
         // This is a way to workaround the way references are set in floatingui
         a.get.map(_.map(n => h.reference(n.asInstanceOf[dom.Element]))).void *>
           b.get.map(_.map(n => h.floating(n.asInstanceOf[dom.HTMLElement]))).void
       }
       // Memoize the style
-      .useMemoBy((props, a, b, _, h) =>
+      .useMemoBy((props, a, b, _, h, _) =>
         (h.strategy, h.placement.asInstanceOf[Placement], h.x, h.y, h.middlewareData)
-      ) { (_, _, _, _, _) => deps =>
+      ) { (_, _, _, _, _, _) => deps =>
         deps match {
           case (strategy, placement, x, y, middleware) =>
             val refStyle                                 =
@@ -111,7 +111,7 @@ object Tooltip {
             (refStyle, arrowStyle)
         }
       }
-      .render { (props, a, b, arr, h, styles) =>
+      .render { (props, a, b, arr, h, _, styles) =>
         val (placementStyle, arrowStyle) = styles.value
 
         val r = props.trigger.withRef(a)

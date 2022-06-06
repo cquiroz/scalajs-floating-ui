@@ -4,17 +4,24 @@
 package floatingui
 
 import japgolly.scalajs.react._
-import floatingui.raw.floatingUiReactDom.mod
+import floatingui.raw.floatingUiReactDomInteractions.mod
 // import floatingui.raw.floatingUiDom.anon.PartialShiftOptionsDetect
 // import floatingui.raw.floatingUiReactDom.anon.OmitPartialComputePositio
 // import floatingui.raw.floatingUiReactDomInteractions.typesMod.UseFloatingReturn
-import floatingui.raw.floatingUiReactDom.{ typesMod => reactTypesMod }
+import floatingui.raw.floatingUiReactDomInteractions.{ typesMod => reactTypesMod }
+import floatingui.raw.floatingUiReactDomInteractions.{ mod => interactionsMod }
 
 object HooksApiExt {
   val floatingHook =
     CustomHook[UseFloatingProps]
       .buildReturning { pos =>
         mod.useFloating[reactTypesMod.ReferenceType](pos).asInstanceOf[UseFloatingReturn]
+      }
+
+  val hoverHook =
+    CustomHook[FloatingContext]
+      .buildReturning { ctx =>
+        interactionsMod.useHover[reactTypesMod.ReferenceType](ctx)
       }
 
   sealed class Primary[Ctx, Step <: HooksApi.AbstractStep](api: HooksApi.Primary[Ctx, Step]) {
@@ -28,6 +35,16 @@ object HooksApiExt {
       step:                      Step
     ): step.Next[UseFloatingReturn] =
       api.customBy(ctx => floatingHook(pos(ctx)))
+
+    final def useHover(pos: FloatingContext)(implicit
+      step:                 Step
+    ): step.Next[ElementProps] =
+      useHoverBy(_ => pos)
+
+    final def useHoverBy(pos: Ctx => FloatingContext)(implicit
+      step:                   Step
+    ): step.Next[ElementProps] =
+      api.customBy(ctx => hoverHook(pos(ctx)))
   }
 
   final class Secondary[Ctx, CtxFn[_], Step <: HooksApi.SubsequentStep[Ctx, CtxFn]](
@@ -38,6 +55,12 @@ object HooksApiExt {
       step:                    Step
     ): step.Next[UseFloatingReturn] =
       useFloatingBy(step.squash(pos)(_))
+
+    def useHoverBy[RT](pos: CtxFn[FloatingContext])(implicit
+      step:                 Step
+    ): step.Next[ElementProps] =
+      useHoverBy(step.squash(pos)(_))
+
   }
 }
 

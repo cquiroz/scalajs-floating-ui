@@ -57,14 +57,15 @@ lazy val facade = project
     // stMinimize              := Selection.AllExcept("@svgdotjs/svg.js")
     stMinimize              := Selection.All,
     stMinimizeKeep ++= List(
-      "floatingUiReactDom.mod.^",
-      "floatingUiReactDom.mod.computePosition",
-      "floatingUiReactDom.mod.flip",
-      "floatingUiReactDom.mod.offset",
-      "floatingUiReactDom.mod.arrow",
-      "floatingUiReactDom.mod.autoPlacement",
-      "floatingUiReactDom.mod.useHover",
-      "floatingUiReactDom.mod.useFloating"
+      "floatingUiReactDomInteractions.mod.^",
+      "floatingUiReactDomInteractions.mod.computePosition",
+      "floatingUiReactDomInteractions.mod.flip",
+      "floatingUiReactDomInteractions.mod.offset",
+      "floatingUiReactDomInteractions.mod.arrow",
+      "floatingUiReactDomInteractions.mod.autoPlacement",
+      "floatingUiReactDomInteractions.mod.useHover",
+      "floatingUiReactDomInteractions.mod.useFloating",
+      "floatingUiReactDomInteractions.mod.useInteractions"
     )
   )
   // .settings(lucumaScalaJsSettings: _*)

@@ -9,11 +9,13 @@ import floatingui.raw.floatingUiCore.typesMod.Side
 // import floatingui.raw.floatingUiDom.anon.PartialShiftOptionsDetect
 import floatingui.raw.floatingUiDom.anon.{ Element => DomElement }
 import floatingui.raw.floatingUiDom.anon.PartialAutoPlacementOptio
+import floatingui.raw.floatingUiReactDomInteractions.anon.PartialUseFloatingPropsRe
 // import floatingui.raw.floatingUiReactDom.anon.OmitPartialComputePositio
 // import floatingui.raw.floatingUiReactDom.anon.Element
 // import floatingui.raw.floatingUiCore.mod
-import floatingui.raw.floatingUiReactDom.{ mod => reactMod }
-import floatingui.raw.floatingUiReactDom.{ typesMod => reactTypesMod }
+import floatingui.raw.floatingUiReactDomInteractions.{ mod => reactMod }
+import floatingui.raw.floatingUiReactDomInteractions.{ typesMod => reactTypesMod }
+// import floatingui.raw.floatingUiReactDomInteractions.{ typesMod => reactInteractionsTypesMod }
 import floatingui.raw.floatingUiDom.typesMod.Middleware
 // import floatingui.raw.floatingUiCore.arrowMod
 import japgolly.scalajs.react._
@@ -26,9 +28,13 @@ import org.scalajs.dom
 import org.w3c.dom.html.HTMLElement
 
 package object floatingui {
-  type UseFloatingProps  = reactTypesMod.UseFloatingProps[reactTypesMod.ReferenceType]
+  type UseFloatingProps = PartialUseFloatingPropsRe
+  val UseFloatingProps = PartialUseFloatingPropsRe
   // val UseFloatingProps = reactTypesMod.UseFloatingProps[reactTypesMod.ReferenceType]
   type UseFloatingReturn = reactTypesMod.UseFloatingReturn[reactTypesMod.ReferenceType]
+  type FloatingContext   = reactTypesMod.FloatingContext[reactTypesMod.ReferenceType]
+
+  type ElementProps = reactTypesMod.ElementProps
   // @js.native
   // trait UseFloatingReturn extends js.Object {
   //   val reference: React.RefHandle[dom.Node | Null]
