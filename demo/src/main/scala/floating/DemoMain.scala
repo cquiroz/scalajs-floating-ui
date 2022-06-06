@@ -91,7 +91,7 @@ object DemoMain {
       elem
     }
 
-    Tooltip(<.button("Example1")).renderIntoDOM(container)
+    Tooltip(<.button("Example")).renderIntoDOM(container)
     // component().renderIntoDOM(container)
     ()
   }

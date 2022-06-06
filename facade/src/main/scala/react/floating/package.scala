@@ -15,16 +15,24 @@ import floatingui.raw.floatingUiReactDom.{ mod => reactMod }
 import floatingui.raw.floatingUiReactDom.{ typesMod => reactTypesMod }
 // import floatingui.raw.floatingUiCore.arrowMod
 import japgolly.scalajs.react._
+import japgolly.scalajs.react.facade.React
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.|
 import org.scalajs.dom.html
+import org.scalajs.dom
 import org.w3c.dom.html.HTMLElement
 
 package object floatingui {
   type UseFloatingProps  = reactTypesMod.UseFloatingProps[reactTypesMod.ReferenceType]
   // val UseFloatingProps = reactTypesMod.UseFloatingProps[reactTypesMod.ReferenceType]
   type UseFloatingReturn = reactTypesMod.UseFloatingReturn[reactTypesMod.ReferenceType]
+  // @js.native
+  // trait UseFloatingReturn extends js.Object {
+  //   val reference: React.RefHandle[dom.Node | Null]
+  //   val floating: React.RefHandle[dom.Node | Null]
+  //   val x: js.UndefOr[Double]
+  // }
 
   // implicit def Compute2Omni(c: floatingui.ComputePosition): ComputePositionReturn = {
   //   val p: ComputePositionReturn = (new js.Object()).asInstanceOf[ComputePositionReturn]

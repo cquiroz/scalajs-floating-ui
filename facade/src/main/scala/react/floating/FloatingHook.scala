@@ -14,7 +14,7 @@ object HooksApiExt {
   val floatingHook =
     CustomHook[UseFloatingProps]
       .buildReturning { pos =>
-        mod.useFloating[reactTypesMod.ReferenceType](pos)
+        mod.useFloating[reactTypesMod.ReferenceType](pos).asInstanceOf[UseFloatingReturn]
       }
 
   sealed class Primary[Ctx, Step <: HooksApi.AbstractStep](api: HooksApi.Primary[Ctx, Step]) {

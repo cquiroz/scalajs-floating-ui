@@ -17,6 +17,7 @@ import org.scalajs.dom.html
 import org.scalajs.dom
 // import floatingui.raw.floatingUiReactDom.anon.Element
 import floatingui.raw.floatingUiReactDom.{ typesMod => reactTypesMod }
+import floatingui.raw.floatingUiCore.typesMod.Strategy
 import floatingui.raw.floatingUiReactDom.mod
 import react.common._
 
@@ -27,6 +28,9 @@ final case class Tooltip(trigger: VdomTag) extends ReactFnProps[Tooltip](Tooltip
 
 object Tooltip {
   type Props = Tooltip
+  implicit val reuseP: Reusability[Props]         = Reusability.never
+  implicit val reuseD: Reusability[Double | Null] = Reusability.never
+  implicit val reuseS: Reusability[Strategy]      = Reusability.never
 
   val component =
     ScalaFnComponent
@@ -37,7 +41,7 @@ object Tooltip {
         reactTypesMod
           .UseFloatingProps[reactTypesMod.ReferenceType]()
           // .setStrategy(Strategy.Fixed)
-          .setPlacement(Placement.Right)
+          .setPlacement(Placement.Top)
           .setWhileElementsMounted(mod.autoUpdate)
           .setMiddleware(
             js.Array(
@@ -50,18 +54,33 @@ object Tooltip {
             )
           )
       }
-      .useState(false)
-      .render { (props, a, b, h, open) =>
-        println("----")
+      // .useState(false)
+      .useEffectWithDepsBy((props, a, b, h) => (a, b)) { (props, a, b, h) => _ =>
+        println("---->>>>>>>")
         org.scalajs.dom.window.console.log(h)
-        org.scalajs.dom.window.console.log(h.reference())
         org.scalajs.dom.window.console.log(h.refs.reference)
-        org.scalajs.dom.window.console.log(h.refs.floating)
+        Callback.log("MM")
+        org.scalajs.dom.window.console.log(a.raw)
+        a.get.map(_.map(n => h.reference(n.asInstanceOf[dom.Element]))).void *>
+          b.get.map(_.map(n => h.floating(n.asInstanceOf[dom.HTMLElement]))).void
+      // org.scalajs.dom.window.console.log(h.refs.floating)
+      // Callback.log(s"ref ${h.x} ${h.reference} ${h.floating}")
+      }
+      .useMemoBy((props, a, b, h) => (h.strategy, h.x, h.y)) { (_, _, _, _) => deps =>
+        deps match {
+          case (strategy, x, y) =>
+            Style(Map("position" -> strategy.toString, "left" -> s"${x}px", "top" -> s"${y}px"))
+        }
+      }
+      .render { (props, a, b, h, s) =>
+        // org.scalajs.dom.window.console.log(h.reference())
+        // org.scalajs.dom.window.console.log(h.refs.reference)
+        // org.scalajs.dom.window.console.log(h.refs.floating)
         println("----")
         // val refRef   =
-        //   Ref.fromJs(h.reference().asInstanceOf[facade.React.RefHandle[dom.Node | Null]])
-        val floatRef =
-          Ref.fromJs(h.refs.floating.asInstanceOf[facade.React.RefHandle[html.Div | Null]])
+        //   Ref.fromJs(h.refs.reference.asInstanceOf[facade.React.RefHandle[dom.Node | Null]])
+        // val floatRef =
+        // Ref.fromJs(h.refs.floating.asInstanceOf[facade.React.RefHandle[html.Div | Null]])
         // re
         // val arrowOpt  = h.middlewareData.arrow.toOption
         // val placement = h.placement
@@ -96,23 +115,27 @@ object Tooltip {
 
         // val r = props.trigger(^.onClick --> open.setState(true)).withRef(refRef)
         // val r = <.button(^.untypedRef := refRef)("Test") //.withRef(refRef)
-        println(s"a ${a.raw.current}")
-        val r = <.button(^.untypedRef := a)("Test")
+        // val r = <.button("Test2").withRef(Ref.fromJs(h.reference))
+        val r = <.button("Test2").withRef(a)
+        // val r = <.button(^.untypedRef := refRef)("Test") //.withRef(a)
         val f = //if (open.value) {
           <.div(
             ^.cls   := "tooltip",
-            // ^.untypedRef := b,
-            ^.style := Style(
-              Map("position" -> h.strategy.toString, "left" -> s"${h.x}px", "top" -> s"${h.y}px")
-            ).toJsObject,
+            ^.style := s.toJsObject,
+            // ^.untypedRef := (Ref.fromJs(h.floating)),
+            // ^.style := Style(
+            //   Map("position" -> h.strategy.toString, "left" -> s"${h.x}px", "top" -> s"${h.y}px")
+            // ).toJsObject,
             "My tooltip autoplaced 1 which is now quite a bit longer"
             // <.div(^.id := "arrow", ^.style := Style(arrowStyle ++ placementStyle).toJsObject)
             //   .withRef(a)
           ).withRef(b)
         //} else EmptyVdom
 
-        h.reference(a.raw.current.asInstanceOf[dom.Element])
-        h.floating(b.raw.current.asInstanceOf[dom.HTMLElement])
-        ReactFragment(r, f)
+        // println(s"a ${a.raw}")
+        // h.reference(a.raw.current.asInstanceOf[dom.Element])
+        // h.floating(b.raw.current.asInstanceOf[dom.HTMLElement])
+        // r
+        <.div(r, f)
       }
 }
