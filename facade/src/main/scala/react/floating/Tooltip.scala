@@ -50,15 +50,15 @@ object Tooltip {
           .setPlacement(Placement.Top)
           .setOpen(open.value)
           .setOnOpenChange { o => println(o); open.setState(o).runNow() }
-          // .setWhileElementsMounted(mod.autoUpdate)
+          .setWhileElementsMounted(mod.autoUpdate)
           .setMiddleware(
             js.Array(
-              autoPlacement(
-                AutoPlacementOptions()
-                  .setAllowedPlacements(js.Array(Placement.Top, Placement.Bottom))
-              ),
-              // offset(5),
-              // flip,
+              // autoPlacement(
+              //   AutoPlacementOptions()
+              //     .setAllowedPlacements(js.Array(Placement.Top, Placement.Bottom))
+              // ),
+              offset(5),
+              flip,
               // shift(ShiftOptions().setPadding(5)),
               arrow(
                 DomElement(arrowRef.raw.asInstanceOf[dom.HTMLElement])
@@ -69,6 +69,8 @@ object Tooltip {
       // .useHoverBy((_, _, _, _, h) => h.asInstanceOf[FloatingContext])
       .useInteractionsBy((_, _, _, _, _, h) =>
         List(mod.useHover(h.context.asInstanceOf[FloatingContext]))
+      //      List(mod.useFocus(h.context.asInstanceOf[FloatingContext])
+      // )
       )
       .useEffectWithDepsBy((_, a, b, _, _, _, _) => (a, b)) { (_, a, b, _, _, h, _) => _ =>
         // This is a way to workaround the way references are set in floatingui
@@ -77,17 +79,25 @@ object Tooltip {
       }
       // Memoize the style
       // .useMemoBy((props, a, b, _, _, h, _) => (h.x, h.y))((props, a, b, _, _, h, _) => _ => ())
-      .render { (props, a, b, arr, open, h,  _) =>
-        println("Render")
+      .render { (props, a, b, arr, open, h, _) =>
+        println(s"Render ${h.x} ${h.y}")
         //   (h.strategy, h.placement.asInstanceOf[Placement], h.x, h.y, h.middlewareData)
         // ) { (_, _, _, _, _, _, _) => deps =>
         val (placementStyle, arrowStyle) =
           (h.strategy, h.placement.asInstanceOf[Placement], h.x, h.y, h.middlewareData) match {
             case (strategy, placement, x, y, middleware) =>
+              val display: Map[String, String | Int] =
+                if (open.value) Map.empty[String, String | Int]
+                else Map[String, String | Int]("display" -> "none")
+
               val refStyle                                 =
-                Style(Map("position" -> strategy.toString, "left" -> s"${x}px", "top" -> s"${y}px"))
+                Style(
+                  display ++ Map("position" -> strategy.toString,
+                                 "left"     -> s"${x}px",
+                                 "top"      -> s"${y}px"
+                  )
+                )
               val arrowOpt                                 = middleware.arrow.toOption
-              println(arrowOpt)
               val arrowStyleMap: Map[String, String | Int] =
                 (arrowOpt.flatMap(_.x.toOption), arrowOpt.flatMap(_.y.toOption)) match {
                   case (Some(x), Some(y)) =>
@@ -115,7 +125,7 @@ object Tooltip {
                 case _                => Map.empty
               }
 
-              val arrowStyle = Style(arrowStyleMap ++ placementStyle)
+              val arrowStyle = Style(display ++ arrowStyleMap ++ placementStyle)
               (refStyle, arrowStyle)
           }
         // }
@@ -139,6 +149,6 @@ object Tooltip {
           ).withRef(b)
         //} else EmptyVdom
 
-        ReactFragment(r, if (open.value) f else EmptyVdom)
+        ReactFragment(r, f)
       }
 }

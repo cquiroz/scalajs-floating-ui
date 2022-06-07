@@ -64,8 +64,10 @@ lazy val facade = project
       "floatingUiReactDomInteractions.mod.arrow",
       "floatingUiReactDomInteractions.mod.autoPlacement",
       "floatingUiReactDomInteractions.mod.useHover",
+      "floatingUiReactDomInteractions.mod.useFocus",
       "floatingUiReactDomInteractions.mod.useFloating",
-      "floatingUiReactDomInteractions.mod.useInteractions"
+      "floatingUiReactDomInteractions.mod.useInteractions",
+      "floatingUiReactDomInteractions.mod.autoUpdate"
     )
   )
   // .settings(lucumaScalaJsSettings: _*)
