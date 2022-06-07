@@ -57,7 +57,7 @@ object Tooltip {
                 AutoPlacementOptions()
                   .setAllowedPlacements(js.Array(Placement.Top, Placement.Bottom))
               ),
-              offset(4),
+              // offset(5),
               // flip,
               // shift(ShiftOptions().setPadding(5)),
               arrow(
@@ -76,8 +76,8 @@ object Tooltip {
           b.get.map(_.map(n => h.floating(n.asInstanceOf[dom.HTMLElement]))).void
       }
       // Memoize the style
-      // .useMemoBy((props, a, b, _, _, h, _) =>
-      .render { (props, a, b, arr, open, h, _) =>
+      // .useMemoBy((props, a, b, _, _, h, _) => (h.x, h.y))((props, a, b, _, _, h, _) => _ => ())
+      .render { (props, a, b, arr, open, h,  _) =>
         println("Render")
         //   (h.strategy, h.placement.asInstanceOf[Placement], h.x, h.y, h.middlewareData)
         // ) { (_, _, _, _, _, _, _) => deps =>
