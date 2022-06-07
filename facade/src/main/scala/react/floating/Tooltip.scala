@@ -43,10 +43,13 @@ object Tooltip {
       .useRefToAnyVdom // reference
       .useRefToAnyVdom // floating
       .useRefToVdom[dom.HTMLElement] // arrow
-      .useFloatingBy { (_, _, _, arrowRef) =>
+      .useState(false) // isOpen
+      .useFloatingBy { (_, _, _, arrowRef, open) =>
         UseFloatingProps()
           // .setStrategy(Strategy.Fixed)
           .setPlacement(Placement.Top)
+          .setOpen(open.value)
+          .setOnOpenChange { o => println(o); open.setState(o).runNow() }
           // .setWhileElementsMounted(mod.autoUpdate)
           .setMiddleware(
             js.Array(
@@ -64,55 +67,60 @@ object Tooltip {
           )
       }
       // .useHoverBy((_, _, _, _, h) => h.asInstanceOf[FloatingContext])
-      .useState(false)
-      .useEffectWithDepsBy((_, a, b, _, _, _) => (a, b)) { (_, a, b, _, h, _) => _ =>
+      .useInteractionsBy((_, _, _, _, _, h) =>
+        List(mod.useHover(h.context.asInstanceOf[FloatingContext]))
+      )
+      .useEffectWithDepsBy((_, a, b, _, _, _, _) => (a, b)) { (_, a, b, _, _, h, _) => _ =>
         // This is a way to workaround the way references are set in floatingui
         a.get.map(_.map(n => h.reference(n.asInstanceOf[dom.Element]))).void *>
           b.get.map(_.map(n => h.floating(n.asInstanceOf[dom.HTMLElement]))).void
       }
       // Memoize the style
-      .useMemoBy((props, a, b, _, h, _) =>
-        (h.strategy, h.placement.asInstanceOf[Placement], h.x, h.y, h.middlewareData)
-      ) { (_, _, _, _, _, _) => deps =>
-        deps match {
-          case (strategy, placement, x, y, middleware) =>
-            val refStyle                                 =
-              Style(Map("position" -> strategy.toString, "left" -> s"${x}px", "top" -> s"${y}px"))
-            val arrowOpt                                 = middleware.arrow.toOption
-            println(arrowOpt)
-            val arrowStyleMap: Map[String, String | Int] =
-              (arrowOpt.flatMap(_.x.toOption), arrowOpt.flatMap(_.y.toOption)) match {
-                case (Some(x), Some(y)) =>
-                  Map("left" -> s"${x}px", "top" -> s"${y}px", "right" -> "", "bottom" -> "")
-                case (Some(x), None)    =>
-                  Map("left" -> s"${x}px", "top" -> s"", "right" -> "", "bottom" -> "")
-                case (None, Some(y))    =>
-                  Map("left" -> "", "top" -> s"${y}px", "right" -> "", "bottom" -> "")
-                case _                  => Map.empty
+      // .useMemoBy((props, a, b, _, _, h, _) =>
+      .render { (props, a, b, arr, open, h, _) =>
+        println("Render")
+        //   (h.strategy, h.placement.asInstanceOf[Placement], h.x, h.y, h.middlewareData)
+        // ) { (_, _, _, _, _, _, _) => deps =>
+        val (placementStyle, arrowStyle) =
+          (h.strategy, h.placement.asInstanceOf[Placement], h.x, h.y, h.middlewareData) match {
+            case (strategy, placement, x, y, middleware) =>
+              val refStyle                                 =
+                Style(Map("position" -> strategy.toString, "left" -> s"${x}px", "top" -> s"${y}px"))
+              val arrowOpt                                 = middleware.arrow.toOption
+              println(arrowOpt)
+              val arrowStyleMap: Map[String, String | Int] =
+                (arrowOpt.flatMap(_.x.toOption), arrowOpt.flatMap(_.y.toOption)) match {
+                  case (Some(x), Some(y)) =>
+                    Map("left" -> s"${x}px", "top" -> s"${y}px", "right" -> "", "bottom" -> "")
+                  case (Some(x), None)    =>
+                    Map("left" -> s"${x}px", "top" -> s"", "right" -> "", "bottom" -> "")
+                  case (None, Some(y))    =>
+                    Map("left" -> "", "top" -> s"${y}px", "right" -> "", "bottom" -> "")
+                  case _                  => Map.empty
+                }
+              val arrowShift                               = "-4px"
+
+              val placementStyle: Map[String, String | Int] = placement match {
+                // case Placement.Top | Placement.TopStart | Placement.TopEnd          => Map("bottom" -> arrowShift)
+                case Placement.Top    => Map("bottom" -> arrowShift)
+                // case Placement.Bottom | Placement.BottomStart | Placement.BottomEnd =>
+                case Placement.Bottom =>
+                  Map("top" -> arrowShift)
+                // case Placement.Left | Placement.LeftStart | Placement.LeftEnd       =>
+                case Placement.Left   =>
+                  Map("right" -> arrowShift)
+                // case Placement.Right | Placement.RightStart | Placement.RightEnd    =>
+                case Placement.Right  =>
+                  Map("left" -> arrowShift)
+                case _                => Map.empty
               }
-            val arrowShift                               = "-4px"
 
-            val placementStyle: Map[String, String | Int] = placement match {
-              // case Placement.Top | Placement.TopStart | Placement.TopEnd          => Map("bottom" -> arrowShift)
-              case Placement.Top    => Map("bottom" -> arrowShift)
-              // case Placement.Bottom | Placement.BottomStart | Placement.BottomEnd =>
-              case Placement.Bottom =>
-                Map("top" -> arrowShift)
-              // case Placement.Left | Placement.LeftStart | Placement.LeftEnd       =>
-              case Placement.Left   =>
-                Map("right" -> arrowShift)
-              // case Placement.Right | Placement.RightStart | Placement.RightEnd    =>
-              case Placement.Right  =>
-                Map("left" -> arrowShift)
-              case _                => Map.empty
-            }
-
-            val arrowStyle = Style(arrowStyleMap ++ placementStyle)
-            (refStyle, arrowStyle)
-        }
-      }
-      .render { (props, a, b, arr, h, _, styles) =>
-        val (placementStyle, arrowStyle) = styles.value
+              val arrowStyle = Style(arrowStyleMap ++ placementStyle)
+              (refStyle, arrowStyle)
+          }
+        // }
+        // .render { (props, a, b, arr, open, h, _, styles) =>
+        // val (placementStyle, arrowStyle) = styles.value
 
         val r = props.trigger.withRef(a)
         val f = //if (open.value) {
@@ -131,6 +139,6 @@ object Tooltip {
           ).withRef(b)
         //} else EmptyVdom
 
-        ReactFragment(r, f)
+        ReactFragment(r, if (open.value) f else EmptyVdom)
       }
 }

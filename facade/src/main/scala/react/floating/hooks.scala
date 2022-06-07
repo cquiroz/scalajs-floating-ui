@@ -10,6 +10,9 @@ import floatingui.raw.floatingUiReactDomInteractions.mod
 // import floatingui.raw.floatingUiReactDomInteractions.typesMod.UseFloatingReturn
 import floatingui.raw.floatingUiReactDomInteractions.{ typesMod => reactTypesMod }
 import floatingui.raw.floatingUiReactDomInteractions.{ mod => interactionsMod }
+import floatingui.raw.floatingUiReactDomInteractions.anon.GetFloatingProps
+import scala.scalajs.js.JSConverters._
+import scala.scalajs.js.|
 
 object HooksApiExt {
   val floatingHook =
@@ -22,6 +25,12 @@ object HooksApiExt {
     CustomHook[FloatingContext]
       .buildReturning { ctx =>
         interactionsMod.useHover[reactTypesMod.ReferenceType](ctx)
+      }
+
+  val interactionsHook =
+    CustomHook[ElementPropsList]
+      .buildReturning { ctx =>
+        interactionsMod.useInteractions(ctx.toJSArray.map(_.asInstanceOf[ElementPropsItem]))
       }
 
   sealed class Primary[Ctx, Step <: HooksApi.AbstractStep](api: HooksApi.Primary[Ctx, Step]) {
@@ -45,21 +54,36 @@ object HooksApiExt {
       step:                   Step
     ): step.Next[ElementProps] =
       api.customBy(ctx => hoverHook(pos(ctx)))
+
+    final def useInteractions(pos: ElementPropsList)(implicit
+      step:                        Step
+    ): step.Next[GetFloatingProps] =
+      useInteractionsBy(_ => pos)
+
+    final def useInteractionsBy(pos: Ctx => ElementPropsList)(implicit
+      step:                          Step
+    ): step.Next[GetFloatingProps] =
+      api.customBy(ctx => interactionsHook(pos(ctx)))
   }
 
   final class Secondary[Ctx, CtxFn[_], Step <: HooksApi.SubsequentStep[Ctx, CtxFn]](
     api: HooksApi.Secondary[Ctx, CtxFn, Step]
   ) extends Primary[Ctx, Step](api) {
 
-    def useFloatingBy[RT](pos: CtxFn[UseFloatingProps])(implicit
-      step:                    Step
+    def useFloatingBy(pos: CtxFn[UseFloatingProps])(implicit
+      step:                Step
     ): step.Next[UseFloatingReturn] =
       useFloatingBy(step.squash(pos)(_))
 
-    def useHoverBy[RT](pos: CtxFn[FloatingContext])(implicit
-      step:                 Step
+    def useHoverBy(pos: CtxFn[FloatingContext])(implicit
+      step:             Step
     ): step.Next[ElementProps] =
       useHoverBy(step.squash(pos)(_))
+
+    def useInteractionsBy(pos: CtxFn[ElementPropsList])(implicit
+      step:                    Step
+    ): step.Next[GetFloatingProps] =
+      useInteractionsBy(step.squash(pos)(_))
 
   }
 }

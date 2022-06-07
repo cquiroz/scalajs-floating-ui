@@ -9,6 +9,7 @@ import floatingui.raw.floatingUiCore.typesMod.Side
 // import floatingui.raw.floatingUiDom.anon.PartialShiftOptionsDetect
 import floatingui.raw.floatingUiDom.anon.{ Element => DomElement }
 import floatingui.raw.floatingUiDom.anon.PartialAutoPlacementOptio
+import floatingui.raw.floatingUiReactDomInteractions.anon.Context
 import floatingui.raw.floatingUiReactDomInteractions.anon.PartialUseFloatingPropsRe
 // import floatingui.raw.floatingUiReactDom.anon.OmitPartialComputePositio
 // import floatingui.raw.floatingUiReactDom.anon.Element
@@ -32,9 +33,14 @@ package object floatingui {
   val UseFloatingProps = PartialUseFloatingPropsRe
   // val UseFloatingProps = reactTypesMod.UseFloatingProps[reactTypesMod.ReferenceType]
   type UseFloatingReturn = reactTypesMod.UseFloatingReturn[reactTypesMod.ReferenceType]
+    with Context[reactTypesMod.ReferenceType]
   type FloatingContext   = reactTypesMod.FloatingContext[reactTypesMod.ReferenceType]
 
-  type ElementProps = reactTypesMod.ElementProps
+  type ElementProps      = reactTypesMod.ElementProps
+  type ElementPropsItem  = reactTypesMod.ElementProps | Unit
+  type ElementPropsArray = js.Array[ElementPropsItem]
+  type ElementPropsList  = List[reactTypesMod.ElementProps]
+
   // @js.native
   // trait UseFloatingReturn extends js.Object {
   //   val reference: React.RefHandle[dom.Node | Null]
